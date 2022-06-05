@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 const { nanoid } = require("nanoid");
 const mongoose = require("mongoose");
@@ -16,12 +15,20 @@ const shortUrlSchema = new Schema({
 let ShortUrl = mongoose.model('ShortURL', shortUrlSchema); 
 
 function createAndSaveShortUrl(originalUrl, done) {
-    const shortenedUrl = nanoid(10);
-    console.log(originalUrl, shortenedUrl);
-    let document = new ShortUrl({original_url: originalUrl, short_url: shortenedUrl});
-    let data = document.save((err, data) => {
-        err ? done(null, err) : done(null, data)
-      });
+    // is the url already in the db?
+    findbyOriginalUrl(originalUrl, (err, data) => {
+        if (data) {
+            return done(null, data);
+        }
+        else {
+            // if not create it
+            const shortenedUrl = nanoid(10);
+            let document = new ShortUrl({original_url: originalUrl, short_url: shortenedUrl});
+            let data = document.save((err, data) => {
+                err ? done(null, err) : done(null, data)
+            });
+        }
+    });        
 }
 
 function findByShortUrl(url, done) {
