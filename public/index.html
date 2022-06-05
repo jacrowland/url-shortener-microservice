@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>URL Shortener</title>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+        <style>
+            body {
+                margin: 0;
+                display: flex;
+                height: 100vh;
+                background-color: rgb(199, 177, 80);
+                justify-content: center;
+                align-items: center;
+            }
+            form {
+                transform: scale(1.5);
+                display: flex;
+                background-color: white;
+                padding: 50px;
+                box-shadow: 5px 5px 0px 0px black;
+                border: 5px solid black;
+            }
+
+            input[type="submit"] {
+                background-color: white;
+                padding: 5px 10px;
+                box-shadow: 2.5px 2.5px 0px 0px black;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <form action="/api/shorturl" method="post">
+                <fieldset>
+                    <legend>URL Shortener</legend>
+                    <label for="name">URL</label>
+                    <input type="text" name="URL">
+                    <input type="submit">
+                </fieldset>
+            </form>
+        </main>
+    </body>
+    <footer>
+
+    </footer>
+</html>
