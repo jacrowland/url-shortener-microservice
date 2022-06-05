@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require("body-parser");
+const dns = require('node:dns');
+
 let app = express();
 
 const PORT = process.env.PORT;
@@ -12,6 +14,10 @@ const server = app.listen(PORT, () => {
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - ${req.ip}`)
+    next();
+  });
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/index.html');
@@ -20,11 +26,18 @@ app.get('/', (req, res) => {
 const createAndSaveShortUrl = require("./handlers.js").createAndSaveShortUrl;
 app.post("/api/shorturl", (req, res) => {
     const url = req.body.URL;
-    const re = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
-    if (!url.match(re)) return res.json({error: 'invalid url'});
-    createAndSaveShortUrl(url, (err, data) => {
-        res.json(data);
-    });
+    const hostname = require('url').parse(url).hostname;
+    dns.lookup(hostname, (err, address, family) => {
+        console.log('address: %j family: IPv%s', address, family);
+        if (err) {
+            return res.json({error: 'invalid url'})
+        }
+        else {
+            createAndSaveShortUrl(url, (err, data) => {
+                res.json(data);
+            });
+        }
+      });
 });
 
 const findByShortUrl = require("./handlers.js").findByShortUrl;
