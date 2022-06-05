@@ -1,5 +1,7 @@
 require('dotenv').config();
-const { nanoid } = require("nanoid");
+const { customAlphabet } = require('nanoid')
+const nanoid = customAlphabet('1234567890', 9)
+
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
@@ -8,7 +10,7 @@ const MONGO_URI = process.env.MONGO_URI;
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const shortUrlSchema = new Schema({
-    short_url: String,
+    short_url: Number,
     original_url: String
 });
 
@@ -22,7 +24,7 @@ function createAndSaveShortUrl(originalUrl, done) {
         }
         else {
             // if not create it
-            const shortenedUrl = nanoid(10);
+            const shortenedUrl = parseInt(nanoid());
             let document = new ShortUrl({original_url: originalUrl, short_url: shortenedUrl});
             let data = document.save((err, data) => {
                 err ? done(null, err) : done(null, data)

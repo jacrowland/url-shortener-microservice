@@ -11,6 +11,17 @@ const server = app.listen(PORT, () => {
     console.log('Listening at http://%s:%s', server.address().address, server.address().port);
 });
 
+//https://www.freecodecamp.org
+app.use((req, res, next) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "OPTIONS, GET, POST, PUT, PATCH, DELETE"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    next();
+  });
+
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -26,24 +37,22 @@ app.get('/', (req, res) => {
 const createAndSaveShortUrl = require("./handlers.js").createAndSaveShortUrl;
 app.post("/api/shorturl", (req, res) => {
     const url = req.body.URL;
-    const hostname = require('url').parse(url).hostname;
-    dns.lookup(hostname, (err, address, family) => {
-        console.log('address: %j family: IPv%s', address, family);
-        if (err) {
-            return res.json({error: 'invalid url'})
-        }
-        else {
-            createAndSaveShortUrl(url, (err, data) => {
-                res.json(data);
-            });
-        }
-      });
+    const re = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
+    if (re.test(url)) {
+      createAndSaveShortUrl(url, (err, data) => {
+        res.json({original_url: data.original_url, short_url: data.short_url});
+    });
+    }
+    else {
+      return res.json({error: 'invalid url'});
+    }
 });
 
 const findByShortUrl = require("./handlers.js").findByShortUrl;
 app.get("/api/shorturl/:URL", (req, res) => {
     const url = req.params.URL;
     findByShortUrl(url, (err, data) => {
-        (err || data === null) ? res.json({ error: 'invalid url' }) : res.redirect(data.original_url);
+        //(err || data === null) ? res.json({ error: 'invalid url' }) : res.redirect(data.original_url);
+        (err) ? res.json({ error: 'invalid url' }) : res.redirect(data.original_url);
     });
 });
