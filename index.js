@@ -11,7 +11,6 @@ const server = app.listen(PORT, () => {
     console.log('Listening at http://%s:%s', server.address().address, server.address().port);
 });
 
-//https://www.freecodecamp.org
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
