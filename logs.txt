@@ -1,3 +1,0 @@
-Mon Jun 06 2022 14:04:30 GMT+1200 (New Zealand Standard Time): GET / - ::ffff:127.0.0.1 - undefined
-Mon Jun 06 2022 14:05:23 GMT+1200 (New Zealand Standard Time): GET / - ::ffff:127.0.0.1 - undefined
-Mon Jun 06 2022 14:05:25 GMT+1200 (New Zealand Standard Time): POST /api/shorturl - ::ffff:127.0.0.1 - undefined
