@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require("body-parser");
-const dns = require('node:dns');
+const fs = require('fs');
+const router = require("./server/routes/index");
 
 let app = express();
 
@@ -24,34 +25,19 @@ app.use((req, res, next) => {
 app.use('/public', express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
 app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path} - ${req.ip}`)
-    next();
-  });
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
-  });
-
-const createAndSaveShortUrl = require("./handlers.js").createAndSaveShortUrl;
-app.post("/api/shorturl", (req, res) => {
-    const url = req.body.URL;
-    const re = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/
-    if (re.test(url)) {
-      createAndSaveShortUrl(url, (err, data) => {
-        res.json({original_url: data.original_url, short_url: data.short_url});
-    });
-    }
-    else {
-      return res.json({error: 'invalid url'});
-    }
+  var content = `${Date()}: ${req.method} ${req.path} - ${req.ip} - ${req.body.URL}\n`;
+  console.log(`${Date()}: ${req.method} ${req.path} - ${req.ip}`)
+  try {
+    fs.writeFile('logs.txt', content, { flag: 'a+' }, err => {});
+    // file written successfully
+  } catch (err) {
+    console.error(err);
+  }
+  next();
 });
 
-const findByShortUrl = require("./handlers.js").findByShortUrl;
-app.get("/api/shorturl/:URL", (req, res) => {
-    const url = req.params.URL;
-    findByShortUrl(url, (err, data) => {
-        //(err || data === null) ? res.json({ error: 'invalid url' }) : res.redirect(data.original_url);
-        (err) ? res.json({ error: 'invalid url' }) : res.redirect(data.original_url);
-    });
-});
+app.use(router);
+
+

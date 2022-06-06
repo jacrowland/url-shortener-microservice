@@ -27,6 +27,7 @@ function createAndSaveShortUrl(originalUrl, done) {
             const shortenedUrl = parseInt(nanoid());
             let document = new ShortUrl({original_url: originalUrl, short_url: shortenedUrl});
             let data = document.save((err, data) => {
+                console.log(data);
                 err ? done(null, err) : done(null, data)
             });
         }
