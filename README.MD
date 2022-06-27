@@ -1,0 +1,4 @@
+# URL Shortener Microservice
+
+The URL Shortener Microservice was built in Javascript using the Express backend API framework, Mongoose, MongoDB Atlas (the hosted NOSQL document database) and Google's App Engine for deployment. The service allows a user to POST a URL to the API which returns JSON containing a shortened URL ID. This ID can then be appended to the URL shortener's URL to create a GET request thatredirects the user to the original URL. This works by saving a document to the database which can then be used to look-up the returned ID.
+e.g. [app url]/api/shorturl/931774092 will redirect to https://www.google.com
